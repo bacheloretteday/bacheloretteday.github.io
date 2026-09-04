@@ -1,0 +1,43 @@
+CONVITE-SURPRESA DA RENATA — PUBLICAÇÃO NO GITHUB PAGES
+
+Este pacote já está pronto. Não altere os nomes nem a organização dos arquivos.
+
+ARQUIVOS QUE DEVEM APARECER NA PÁGINA PRINCIPAL DO REPOSITÓRIO:
+
+• index.html
+• pasta assets
+• .nojekyll
+• COMO-PUBLICAR.txt
+
+PASSO A PASSO
+
+1. Entre em https://github.com e acesse sua conta.
+2. Clique no sinal +, no canto superior direito, e escolha “New repository”.
+3. Nome sugerido: convite-renata
+4. Marque “Public” e clique em “Create repository”.
+5. No repositório, clique em “uploading an existing file” ou em “Add file” → “Upload files”.
+6. Descompacte este arquivo ZIP no seu computador.
+7. Abra a pasta descompactada “convite-renata-github”.
+8. Arraste TODOS os arquivos e a pasta assets para a área de envio do GitHub.
+   Atenção: envie o conteúdo da pasta, e não a pasta fechada.
+9. Clique em “Commit changes”.
+10. Abra “Settings” → “Pages”.
+11. Em “Build and deployment”, selecione “Deploy from a branch”.
+12. Escolha a branch “main” e a pasta “/ (root)”.
+13. Clique em “Save”.
+
+O endereço será parecido com:
+https://SEU-USUARIO.github.io/convite-renata/
+
+A publicação pode levar alguns minutos. Quando o endereço estiver disponível,
+abra-o no celular e teste o botão “Eu quero descobrir”.
+
+Depois, use o endereço definitivo para gerar o QR Code do cartão.
+
+IMPORTANTE
+
+• A Renata não precisará fazer login no GitHub nem no GPT.
+• Qualquer pessoa que tiver o endereço ou o QR Code poderá abrir o convite.
+• Se algum arquivo da pasta assets não for enviado, imagens poderão desaparecer.
+• O QR Code deve ser criado somente depois de confirmar o endereço definitivo.
+
