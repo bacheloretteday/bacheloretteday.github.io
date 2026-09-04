@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#68724b" />
+    <meta name="description" content="Uma surpresa elegante e muito divertida espera por Renata." />
+    <title>Renata, temos uma surpresa</title>
+    <style>
+      :root {
+        --cream: #fffdf7;
+        --warm: #f3efdf;
+        --olive: #68724b;
+        --olive-deep: #344126;
+        --olive-bright: #879566;
+        --gold: #bd9240;
+        --gold-soft: #e4cf91;
+        --ink: #293020;
+        --white: #fffefb;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; color: var(--ink); background: var(--cream); font-family: "Avenir Next", Avenir, Montserrat, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+      button { font: inherit; }
+      .grain { position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: .16; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E"); mix-blend-mode: multiply; }
+      .intro { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; min-height: 100svh; padding: 22px; overflow: hidden; background: radial-gradient(circle at 18% 18%, rgba(255,255,255,.25) 0 2px, transparent 3px), radial-gradient(circle at 82% 28%, rgba(228,207,145,.45) 0 3px, transparent 4px), radial-gradient(circle at 70% 82%, rgba(255,255,255,.3) 0 2px, transparent 3px), linear-gradient(145deg, #879566 0%, #69764d 48%, #505f38 100%); transition: opacity .75s ease, visibility .75s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+      .intro.is-open { opacity: 0; visibility: hidden; transform: scale(1.04); }
+      .intro-botanical { position: absolute; width: min(88vw, 520px); right: -210px; bottom: -210px; opacity: .19; transform: rotate(-12deg); pointer-events: none; }
+      .spark { position: absolute; width: 8px; height: 8px; border: 1px solid rgba(255,254,251,.72); transform: rotate(45deg); animation: twinkle 2.8s ease-in-out infinite; }
+      .spark.one { top: 15%; left: 17%; }
+      .spark.two { top: 24%; right: 15%; animation-delay: .8s; }
+      .spark.three { bottom: 20%; left: 12%; animation-delay: 1.5s; }
+      .secret-card { position: relative; z-index: 2; width: min(100%, 440px); padding: 32px 24px 34px; text-align: center; animation: arrive .9s cubic-bezier(.2,.8,.2,1) both; }
+      .whisper { display: inline-flex; align-items: center; gap: 9px; margin: 0 0 24px; padding: 8px 14px; color: var(--olive-deep); background: rgba(255,253,247,.9); border-radius: 999px; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; box-shadow: 0 8px 24px rgba(39,49,29,.12); }
+      .whisper::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 1.8s infinite; }
+      .secret-card h1 { margin: 0; color: var(--white); font-family: Georgia, "Times New Roman", serif; font-size: clamp(4.4rem, 20vw, 7rem); font-weight: 400; line-height: .88; letter-spacing: -.055em; text-shadow: 0 12px 36px rgba(41,48,32,.18); }
+      .secret-card h1 span { display: block; margin-top: 18px; color: var(--gold-soft); font-family: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif; font-size: .72rem; font-weight: 800; letter-spacing: .25em; text-transform: uppercase; }
+      .secret-card .tease { max-width: 29ch; margin: 29px auto 28px; color: rgba(255,255,250,.92); font-size: 1.06rem; line-height: 1.65; }
+      .reveal-button { min-height: 54px; padding: 0 27px; color: var(--olive-deep); background: var(--white); border: 1px solid rgba(255,255,255,.8); border-radius: 999px; box-shadow: 0 14px 34px rgba(42,51,31,.22); cursor: pointer; font-size: .82rem; font-weight: 900; letter-spacing: .105em; text-transform: uppercase; transition: transform .2s ease, box-shadow .2s ease; }
+      .reveal-button:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 18px 40px rgba(42,51,31,.28); }
+      .reveal-button:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 5px; }
+      .tiny-warning { margin: 15px 0 0; color: rgba(255,255,250,.67); font-size: .73rem; letter-spacing: .08em; }
+      main { min-height: 100vh; opacity: 0; transform: translateY(24px); }
+      body.revealed main { animation: revealPage .9s .28s ease forwards; }
+      .sound-toggle { position: fixed; top: max(16px, env(safe-area-inset-top)); right: 16px; z-index: 18; display: none; place-items: center; width: 44px; height: 44px; padding: 0; color: var(--olive-deep); background: rgba(255,253,247,.9); border: 1px solid rgba(189,146,64,.35); border-radius: 50%; box-shadow: 0 8px 25px rgba(52,65,38,.14); cursor: pointer; backdrop-filter: blur(8px); }
+      body.revealed .sound-toggle { display: grid; }
+      .sound-toggle:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+      .quiz-stage { position: relative; min-height: 100svh; display: grid; place-items: center; padding: max(72px, env(safe-area-inset-top)) 18px max(50px, env(safe-area-inset-bottom)); overflow: hidden; background: radial-gradient(circle at 12% 16%, rgba(189,146,64,.16), transparent 180px), linear-gradient(155deg, #fffdf7 0%, #f5efdc 100%); }
+      .quiz-stage.is-hidden { display: none; }
+      .quiz-botanical { position: absolute; width: min(72vw, 460px); right: -210px; bottom: -150px; opacity: .14; pointer-events: none; }
+      .quiz-shell { position: relative; z-index: 2; width: min(100%, 570px); }
+      .quiz-kicker { margin: 0 0 12px; color: var(--gold); font-size: .74rem; font-weight: 900; letter-spacing: .18em; text-align: center; text-transform: uppercase; }
+      .quiz-title { max-width: 21ch; margin: 0 auto; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem, 6.6vw, 2.65rem); font-weight: 400; line-height: 1.16; text-align: center; }
+      .quiz-note { max-width: 38ch; margin: 15px auto 26px; color: #687050; font-size: .95rem; line-height: 1.55; text-align: center; }
+      .quiz-progress { display: flex; gap: 7px; margin: 0 auto 22px; }
+      .progress-dot { flex: 1; height: 4px; overflow: hidden; background: rgba(104,114,75,.16); border-radius: 99px; }
+      .progress-dot::after { content: ""; display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--gold), var(--olive-bright)); transition: width .35s ease; }
+      .progress-dot.is-done::after, .progress-dot.is-current::after { width: 100%; }
+      .progress-dot.is-current::after { animation: pulseBar 1.8s ease-in-out infinite; }
+      .quiz-card { padding: 28px 20px 22px; background: rgba(255,254,251,.94); border: 1px solid rgba(189,146,64,.28); border-radius: 24px 24px 24px 7px; box-shadow: 13px 15px 0 rgba(104,114,75,.12), 0 22px 55px rgba(52,65,38,.1); }
+      .question-count { margin: 0 0 12px; color: var(--olive); font-size: .72rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+      .question-text { min-height: 3.2em; margin: 0 0 22px; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 5vw, 1.6rem); font-weight: 400; line-height: 1.38; }
+      .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .answer { min-height: 49px; padding: 11px 12px; color: var(--olive-deep); background: #f7f3e6; border: 1px solid rgba(104,114,75,.2); border-radius: 13px; cursor: pointer; font-size: .91rem; font-weight: 750; transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease; }
+      .answer:last-child:nth-child(odd) { grid-column: 1 / -1; }
+      .answer:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--gold); }
+      .answer:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 2px; }
+      .answer.is-correct { color: var(--white); background: var(--olive); border-color: var(--olive); }
+      .answer.is-tried { opacity: .45; text-decoration: line-through; }
+      .answer:disabled { cursor: default; }
+      .quiz-feedback { min-height: 46px; margin: 16px 2px 0; color: #687050; font-size: .9rem; font-weight: 650; line-height: 1.45; text-align: center; }
+      .quiz-feedback.is-success { color: var(--olive-deep); }
+      .next-question { display: none; width: 100%; min-height: 49px; margin-top: 4px; color: var(--cream); background: var(--olive); border: 0; border-radius: 999px; cursor: pointer; font-size: .76rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+      .next-question.is-visible { display: block; animation: arrive .35s ease both; }
+      .identity { position: relative; min-height: 100svh; display: none; place-items: center; padding: max(58px, env(safe-area-inset-top)) 20px 64px; overflow: hidden; text-align: center; background: radial-gradient(circle at 10% 12%, rgba(189,146,64,.18), transparent 170px), linear-gradient(180deg, var(--cream) 0%, #fbf7ea 100%); }
+      .identity.is-visible { display: grid; animation: revealPage .8s ease both; }
+      .identity-inner { position: relative; z-index: 2; width: min(100%, 590px); }
+      .identity-status { display: inline-block; margin: 0 0 14px; padding: 8px 13px; color: var(--cream); background: var(--olive); border-radius: 999px; font-size: .68rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+      .identity h1 { margin: 0; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.2rem, 9vw, 3.8rem); font-weight: 400; line-height: 1.05; }
+      .identity-copy { max-width: 34ch; margin: 14px auto 8px; color: #687050; font-size: 1rem; line-height: 1.6; }
+      .identity .portrait-wrap { margin-top: -5px; }
+      .mosaic-portrait { overflow: visible; }
+      .mosaic-portrait .renata-portrait { opacity: 1; }
+      .mosaic-grid { position: absolute; inset: 0; z-index: 2; overflow: hidden; -webkit-mask-image: radial-gradient(ellipse 92% 92% at 50% 48%, #000 64%, rgba(0,0,0,.92) 76%, transparent 100%); mask-image: radial-gradient(ellipse 92% 92% at 50% 48%, #000 64%, rgba(0,0,0,.92) 76%, transparent 100%); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; transition: opacity .35s ease; pointer-events: none; }
+      .mosaic-grid.is-complete { opacity: 0; }
+      .mosaic-tile { position: absolute; left: calc(var(--col) * 10%); top: calc(var(--row) * 8.3334%); width: 10.3%; height: 8.65%; opacity: 1; background: var(--veil); transform: scale(1.05); transform-origin: center; animation: mosaicClear .58s cubic-bezier(.45,0,.2,1) var(--delay) forwards; }
+      .open-invite { min-height: 52px; margin-top: -28px; padding: 0 25px; color: var(--cream); background: var(--olive-deep); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; box-shadow: 0 13px 30px rgba(52,65,38,.2); cursor: pointer; font-size: .76rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+      .open-invite:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 4px; }
+      .invitation-content { display: none; }
+      .invitation-content.is-visible { display: block; animation: revealPage .8s ease both; }
+      .hero { position: relative; min-height: 78svh; display: grid; place-items: center; padding: max(78px, env(safe-area-inset-top)) 22px 88px; overflow: hidden; text-align: center; background: radial-gradient(circle at 10% 12%, rgba(189,146,64,.18), transparent 170px), linear-gradient(180deg, var(--cream) 0%, #fbf7ea 100%); }
+      .hero-botanical { position: absolute; width: min(78vw, 510px); top: -170px; right: -210px; opacity: .17; pointer-events: none; }
+      .hero-inner { position: relative; z-index: 2; width: min(100%, 620px); }
+      .portrait-wrap { position: relative; width: min(88vw, 430px); margin: -8px auto 0; isolation: isolate; }
+      .portrait-wrap::before { content: none; }
+      .portrait-wrap::after { content: "✦"; position: absolute; top: 20%; right: 1%; color: var(--gold); font-size: 1.35rem; animation: twinkle 2.8s ease-in-out infinite; }
+      .renata-portrait { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 92% 92% at 50% 48%, #000 58%, rgba(0,0,0,.86) 70%, rgba(0,0,0,.42) 82%, transparent 100%); mask-image: radial-gradient(ellipse 92% 92% at 50% 48%, #000 58%, rgba(0,0,0,.86) 70%, rgba(0,0,0,.42) 82%, transparent 100%); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+      .classified { display: inline-block; margin: 0 0 28px; padding: 9px 15px 8px; color: var(--cream); background: var(--olive); border-radius: 4px; font-size: .7rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; transform: rotate(-2deg); box-shadow: 5px 5px 0 var(--gold-soft); }
+      .hero h1 { position: relative; z-index: 3; margin: -62px 0 0; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: clamp(4rem, 18vw, 7.2rem); font-weight: 400; line-height: .84; letter-spacing: -.06em; text-shadow: 0 3px 0 var(--cream), 0 8px 18px rgba(52,65,38,.08); }
+      .hero h1 em { display: block; max-width: 34ch; margin: 22px auto 0; color: var(--gold); font-family: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif; font-size: clamp(.7rem, 2.9vw, .9rem); font-style: normal; font-weight: 900; line-height: 1.55; letter-spacing: .13em; text-transform: uppercase; }
+      .hook { max-width: 31ch; margin: 33px auto 0; color: #5d6747; font-size: 1.04rem; line-height: 1.7; }
+      .scroll-clue { position: absolute; left: 50%; bottom: 26px; display: grid; place-items: center; width: 36px; height: 36px; color: var(--olive); border: 1px solid rgba(104,114,75,.35); border-radius: 50%; transform: translateX(-50%); animation: bob 2s ease-in-out infinite; }
+      .story { position: relative; padding: 70px 18px 88px; overflow: hidden; background: var(--olive); }
+      .story::before { content: ""; position: absolute; width: 240px; height: 240px; top: 80px; left: -180px; border: 1px solid rgba(228,207,145,.28); border-radius: 50%; }
+      .story-inner { position: relative; z-index: 2; width: min(100%, 680px); margin: 0 auto; }
+      .opening-card { margin-bottom: 42px; padding: 34px 25px; color: var(--olive-deep); background: var(--white); border-radius: 22px 22px 22px 5px; box-shadow: 12px 14px 0 rgba(52,65,38,.52); transform: rotate(-.8deg); }
+      .opening-card .chapter, .clues-title { margin: 0 0 18px; color: var(--gold); font-size: .72rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+      .opening-card p:not(.chapter) { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.15rem, 4.7vw, 1.4rem); line-height: 1.65; }
+      .opening-card p + p { margin-top: 18px; }
+      .instruction { max-width: 39ch; margin: 0 auto 38px; color: var(--white); font-size: 1.02rem; font-weight: 650; line-height: 1.7; text-align: center; }
+      .clues-title { color: var(--gold-soft); text-align: center; }
+      .clues { display: grid; gap: 15px; }
+      .clue { position: relative; padding: 23px 21px 22px 68px; background: #f8f4e7; border: 1px solid rgba(228,207,145,.48); border-radius: 15px; box-shadow: 0 10px 28px rgba(37,45,28,.13); transition: transform .25s ease; }
+      .clue:nth-child(even) { transform: rotate(.65deg); }
+      .clue:nth-child(odd) { transform: rotate(-.45deg); }
+      .clue:hover { transform: translateY(-3px) rotate(0); }
+      .clue-number { position: absolute; top: 20px; left: 19px; display: grid; place-items: center; width: 34px; height: 34px; color: var(--cream); background: var(--olive); border-radius: 50%; font-family: Georgia, "Times New Roman", serif; font-size: .9rem; font-style: italic; box-shadow: 3px 3px 0 var(--gold-soft); }
+      .clue-label { display: block; margin-bottom: 6px; color: var(--gold); font-size: .7rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+      .clue-value { display: block; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: 1.08rem; line-height: 1.55; }
+      .ending { position: relative; padding: 80px 22px 92px; text-align: center; background: var(--cream); }
+      .ending-botanical { position: absolute; width: min(74vw, 430px); left: -190px; bottom: -120px; opacity: .15; transform: rotate(8deg); pointer-events: none; }
+      .ending-inner { position: relative; z-index: 2; width: min(100%, 610px); margin: 0 auto; }
+      .final-secret { display: inline-block; margin: 0 0 25px; color: var(--gold); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.65rem, 7vw, 2.35rem); font-style: italic; transform: rotate(-2deg); }
+      .ending h2 { margin: 0; color: var(--olive-deep); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem, 6.2vw, 2.4rem); font-weight: 400; line-height: 1.45; }
+      .cheers { display: inline-flex; align-items: center; gap: 12px; margin-top: 38px; color: var(--olive); font-size: .72rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+      .cheers::before, .cheers::after { content: "✦"; color: var(--gold); font-size: .85rem; }
+      .celebration { position: fixed; inset: 0; z-index: 50; overflow: hidden; pointer-events: none; }
+      .confetti { position: absolute; top: 42%; left: 50%; width: 9px; height: 16px; border-radius: 2px; opacity: 0; animation: confettiBurst 1.45s cubic-bezier(.15,.65,.25,1) forwards; }
+      @keyframes arrive { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes revealPage { to { opacity: 1; transform: translateY(0); } }
+      @keyframes twinkle { 0%, 100% { opacity: .25; transform: rotate(45deg) scale(.7); } 50% { opacity: 1; transform: rotate(45deg) scale(1.25); } }
+      @keyframes pulse { 50% { box-shadow: 0 0 0 5px rgba(189,146,64,.18); } }
+      @keyframes bob { 50% { transform: translate(-50%, 7px); } }
+      @keyframes confettiBurst { 0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); } 100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r)); } }
+      @keyframes pulseBar { 50% { opacity: .5; } }
+      @keyframes mosaicClear { 0% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(.48) rotate(7deg); } }
+      @media (min-width: 680px) { .clues { grid-template-columns: 1fr 1fr; align-items: stretch; } .clue { height: 100%; } .opening-card { padding: 47px 50px; } }
+      @media (max-width: 390px) { .secret-card { padding-inline: 10px; } .story { padding-inline: 14px; } .clue { padding-left: 62px; } .quiz-card { padding-inline: 16px; } .answers { gap: 8px; } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; scroll-behavior: auto !important; } .mosaic-grid { display: none; } .mosaic-portrait .renata-portrait { opacity: 1; } }
+    </style>
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="celebration" id="celebration" aria-hidden="true"></div>
+    <section class="intro" id="intro" aria-labelledby="intro-title">
+      <span class="spark one" aria-hidden="true"></span><span class="spark two" aria-hidden="true"></span><span class="spark three" aria-hidden="true"></span>
+      <img class="intro-botanical" src="assets/botanica-aquarela.png" alt="" />
+      <div class="secret-card">
+        <p class="whisper">Pssiu… isso é confidencial</p>
+        <h1 id="intro-title">Renata<span>Temos uma missão para você</span></h1>
+        <p class="tease">Você está a um passo de acessar informações confidenciais.</p>
+        <button class="reveal-button" id="reveal" type="button">Eu quero descobrir</button>
+        <p class="tiny-warning">Atenção: pode causar frio na barriga.</p>
+      </div>
+    </section>
+    <button class="sound-toggle" id="sound-toggle" type="button" aria-label="Desativar sons" aria-pressed="true" title="Som ligado">♪</button>
+    <main id="convite" aria-hidden="true">
+      <section class="quiz-stage" id="quiz-stage" aria-labelledby="quiz-title">
+        <img class="quiz-botanical" src="assets/botanica-aquarela.png" alt="" />
+        <div class="quiz-shell">
+          <p class="quiz-kicker">Verificação confidencial</p>
+          <h1 class="quiz-title" id="quiz-title">Antes de revelar as informações, uma pergunta: você conhece mesmo suas madrinhas?</h1>
+          <p class="quiz-note">Sete perguntas. Duas chances para cada uma. As madrinhas estão de olho.</p>
+          <div class="quiz-progress" id="quiz-progress" aria-label="Progresso: pergunta 1 de 7"></div>
+          <section class="quiz-card" aria-live="polite">
+            <p class="question-count" id="question-count">Pergunta 1 de 7</p>
+            <h2 class="question-text" id="question-text"></h2>
+            <div class="answers" id="answers"></div>
+            <p class="quiz-feedback" id="quiz-feedback"></p>
+            <button class="next-question" id="next-question" type="button">Próxima pergunta</button>
+          </section>
+        </div>
+      </section>
+
+      <section class="identity" id="identity" aria-labelledby="identity-title" aria-hidden="true">
+        <div class="identity-inner">
+          <p class="identity-status" id="identity-status">Missão cumprida</p>
+          <h1 id="identity-title">Identidade confirmada.</h1>
+          <p class="identity-copy">A noiva conhece bem demais esse grupo.</p>
+          <div class="portrait-wrap mosaic-portrait" id="mosaic-portrait">
+            <img class="renata-portrait" id="identity-portrait" src="assets/retrato-renata-aquarela.png" alt="Ilustração em aquarela de Renata" />
+            <div class="mosaic-grid" id="mosaic-grid" aria-hidden="true"></div>
+          </div>
+          <button class="open-invite" id="open-invite" type="button">Agora revele as informações!</button>
+        </div>
+      </section>
+
+      <div class="invitation-content" id="invitation-content" aria-hidden="true">
+      <header class="hero">
+        <img class="hero-botanical" src="assets/botanica-aquarela.png" alt="" />
+        <div class="hero-inner">
+          <p class="classified">Segredo oficialmente revelado</p>
+          <div class="portrait-wrap">
+            <img class="renata-portrait" src="assets/retrato-renata-aquarela.png" alt="Ilustração em aquarela de Renata" />
+          </div>
+          <h1>Renata<em>A despedida de solteira está pronta. Você só precisa aproveitar!</em></h1>
+          <p class="hook">O grande dia está chegando — mas, antes do “sim”, esqueça os preparativos: chegou a sua vez de relaxar, se deixar levar e viver uma surpresa preparada só para você.</p>
+        </div>
+        <div class="scroll-clue" aria-hidden="true">↓</div>
+      </header>
+      <section class="story">
+        <div class="story-inner">
+          <article class="opening-card">
+            <p class="chapter">Agora é a sua vez</p>
+            <p>Você passou meses cuidando de cada detalhe do casamento, e agora chegou a nossa vez de cuidar de você.</p>
+            <p>Preparamos um momento especial para celebrar sua vida, nossa amizade e o início dessa nova fase.</p>
+          </article>
+          <p class="instruction">Não se preocupe com nada. Apenas prepare o coração e siga as instruções abaixo:</p>
+          <p class="clues-title">As únicas pistas permitidas</p>
+          <div class="clues" aria-label="Informações do encontro">
+            <article class="clue"><span class="clue-number" aria-hidden="true">01</span><span class="clue-label">Horário</span><span class="clue-value">15h</span></article>
+            <article class="clue"><span class="clue-number" aria-hidden="true">02</span><span class="clue-label">Ponto de encontro</span><span class="clue-value">Mantenha o celular ligado. Alguém irá buscar você onde estiver.</span></article>
+            <article class="clue"><span class="clue-number" aria-hidden="true">03</span><span class="clue-label">Dress code</span><span class="clue-value">Está na caixa, com exceção da lingerie, a não ser que queira (rsrs).</span></article>
+            <article class="clue"><span class="clue-number" aria-hidden="true">04</span><span class="clue-label">Na mala</span><span class="clue-value">Trocas de roupa confortáveis, um look para a noite, casaquinho de frio e seu sorriso.</span></article>
+          </div>
+        </div>
+      </section>
+      <section class="ending">
+        <img class="ending-botanical" src="assets/botanica-aquarela.png" alt="" />
+        <div class="ending-inner">
+          <p class="final-secret">O restante é surpresa.</p>
+          <h2>Só venha pronta para viver, brindar, rir muito e guardar mais uma memória inesquecível com a gente.</h2>
+          <p class="cheers">Nos encontramos às 15h</p>
+        </div>
+      </section>
+      </div>
+    </main>
+    <script>
+      const revealButton = document.getElementById('reveal');
+      const intro = document.getElementById('intro');
+      const invitation = document.getElementById('convite');
+      const celebration = document.getElementById('celebration');
+      const quizStage = document.getElementById('quiz-stage');
+      const identity = document.getElementById('identity');
+      const identityStatus = document.getElementById('identity-status');
+      const invitationContent = document.getElementById('invitation-content');
+      const openInviteButton = document.getElementById('open-invite');
+      const soundToggle = document.getElementById('sound-toggle');
+      const questionCount = document.getElementById('question-count');
+      const questionText = document.getElementById('question-text');
+      const answers = document.getElementById('answers');
+      const feedback = document.getElementById('quiz-feedback');
+      const nextQuestionButton = document.getElementById('next-question');
+      const progress = document.getElementById('quiz-progress');
+      const mosaicGrid = document.getElementById('mosaic-grid');
+      const colors = ['#bd9240', '#e4cf91', '#fffefb', '#879566', '#52613a'];
+      const bridesmaids = ['Gleice', 'Patrícia', 'Helen', 'Bruna', 'Bárbara'];
+      const questions = [
+        { text: 'Quem provavelmente vai chorar primeiro no casamento?', answer: 'Bárbara', reaction: 'Bárbara já pode separar o lencinho.' },
+        { text: 'Quem transforma qualquer encontro simples em um acontecimento?', answer: 'Bruna', reaction: 'Bruna não participa do encontro. Ela produz o evento.' },
+        { text: 'Quem possui o vocabulário mais criativo quando perde a paciência?', answer: 'Helen', reaction: 'Helen: poucas palavras, todas cuidadosamente escolhidas.' },
+        { text: 'Quem promete que será apenas a saideira, mas sempre encontra motivo para mais uma?', answer: 'Bruna', reaction: 'Bruna e a saideira mais longa da história.' },
+        { text: 'Quem demora mais para responder no grupo?', answer: 'Patrícia', reaction: 'Patrícia respondeu… eventualmente.' },
+        { text: 'Quem sabe de todas as histórias — inclusive das que deveriam continuar secretas?', answer: 'Gleice', reaction: 'Gleice guarda o arquivo confidencial completo.' },
+        { text: 'Quem aceita qualquer plano antes mesmo de saber aonde vai?', answer: 'Patrícia', reaction: 'Patrícia topa primeiro e pergunta depois.' }
+      ];
+      let currentQuestion = 0;
+      let attempts = 0;
+      let score = 0;
+      let soundEnabled = true;
+      let audioContext;
+
+      function ensureAudio() {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === 'suspended') audioContext.resume();
+      }
+
+      function tone(frequency, start, duration, volume, type = 'sine') {
+        if (!soundEnabled || !audioContext) return;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + start);
+        gain.gain.setValueAtTime(0.0001, audioContext.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(volume, audioContext.currentTime + start + .025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + start + duration);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start(audioContext.currentTime + start);
+        oscillator.stop(audioContext.currentTime + start + duration + .03);
+      }
+
+      function playCorrect() {
+        tone(659.25, 0, .18, .055);
+        tone(880, .11, .28, .045);
+      }
+
+      function playFinale() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((note, index) => tone(note, index * .09, .45, .045));
+        tone(1318.5, .4, .65, .035, 'triangle');
+      }
+
+      function burstConfetti() {
+        const total = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 88;
+        for (let index = 0; index < total; index += 1) {
+          const piece = document.createElement('i');
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 150 + Math.random() * 430;
+          piece.className = 'confetti';
+          piece.style.background = colors[index % colors.length];
+          piece.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+          piece.style.setProperty('--y', `${Math.sin(angle) * distance + 160}px`);
+          piece.style.setProperty('--r', `${360 + Math.random() * 900}deg`);
+          piece.style.animationDelay = `${Math.random() * .16}s`;
+          piece.style.width = `${6 + Math.random() * 7}px`;
+          piece.style.height = `${8 + Math.random() * 13}px`;
+          celebration.appendChild(piece);
+        }
+        window.setTimeout(() => celebration.replaceChildren(), 1800);
+      }
+
+      function renderProgress() {
+        progress.replaceChildren();
+        questions.forEach((_, index) => {
+          const dot = document.createElement('span');
+          dot.className = `progress-dot${index < currentQuestion ? ' is-done' : index === currentQuestion ? ' is-current' : ''}`;
+          dot.setAttribute('aria-hidden', 'true');
+          progress.appendChild(dot);
+        });
+        progress.setAttribute('aria-label', `Progresso: pergunta ${Math.min(currentQuestion + 1, questions.length)} de ${questions.length}`);
+      }
+
+      function renderQuestion() {
+        attempts = 0;
+        const question = questions[currentQuestion];
+        questionCount.textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+        questionText.textContent = question.text;
+        feedback.textContent = '';
+        feedback.className = 'quiz-feedback';
+        nextQuestionButton.classList.remove('is-visible');
+        answers.replaceChildren();
+        const shuffledNames = [...bridesmaids];
+        for (let index = shuffledNames.length - 1; index > 0; index -= 1) {
+          const swapWith = Math.floor(Math.random() * (index + 1));
+          [shuffledNames[index], shuffledNames[swapWith]] = [shuffledNames[swapWith], shuffledNames[index]];
+        }
+        shuffledNames.forEach((name) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'answer';
+          button.textContent = name;
+          button.addEventListener('click', () => checkAnswer(button, name));
+          answers.appendChild(button);
+        });
+        renderProgress();
+      }
+
+      function lockAnswers() {
+        answers.querySelectorAll('button').forEach((button) => { button.disabled = true; });
+      }
+
+      function checkAnswer(button, name) {
+        ensureAudio();
+        const question = questions[currentQuestion];
+        if (name === question.answer) {
+          score += 1;
+          button.classList.add('is-correct');
+          lockAnswers();
+          feedback.textContent = question.reaction;
+          feedback.className = 'quiz-feedback is-success';
+          playCorrect();
+          nextQuestionButton.textContent = currentQuestion === questions.length - 1 ? 'Confirmar identidade' : 'Próxima pergunta';
+          nextQuestionButton.classList.add('is-visible');
+          nextQuestionButton.focus();
+          return;
+        }
+
+        attempts += 1;
+        button.disabled = true;
+        button.classList.add('is-tried');
+        if (attempts === 1) {
+          feedback.textContent = 'Quase! Você tem mais uma chance.';
+          const nextChoice = answers.querySelector('button:not(:disabled)');
+          if (nextChoice) nextChoice.focus();
+          return;
+        }
+
+        lockAnswers();
+        feedback.textContent = '';
+        window.setTimeout(advanceQuestion, 420);
+      }
+
+      function advanceQuestion() {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion += 1;
+          renderQuestion();
+          questionText.focus?.();
+          return;
+        }
+        finishQuiz();
+      }
+
+      function formPortraitMosaic() {
+        mosaicGrid.replaceChildren();
+        mosaicGrid.classList.remove('is-complete');
+        const tiles = [];
+        const veilColors = ['#f8f3e5', '#f1ead8', '#e9e4d2', '#dfe3ce', '#f7f4e9'];
+        for (let row = 0; row < 12; row += 1) {
+          for (let col = 0; col < 10; col += 1) {
+            tiles.push({ row, col });
+          }
+        }
+        for (let index = tiles.length - 1; index > 0; index -= 1) {
+          const swapWith = Math.floor(Math.random() * (index + 1));
+          [tiles[index], tiles[swapWith]] = [tiles[swapWith], tiles[index]];
+        }
+        tiles.forEach(({ row, col }, order) => {
+          const tile = document.createElement('i');
+          tile.className = 'mosaic-tile';
+          tile.style.setProperty('--row', row);
+          tile.style.setProperty('--col', col);
+          tile.style.setProperty('--delay', `${order * .008}s`);
+          tile.style.setProperty('--veil', veilColors[(row + col) % veilColors.length]);
+          mosaicGrid.appendChild(tile);
+        });
+        window.setTimeout(() => mosaicGrid.classList.add('is-complete'), 1280);
+      }
+
+      function finishQuiz() {
+        quizStage.classList.add('is-hidden');
+        identityStatus.textContent = score >= 5 ? 'Missão cumprida' : 'Aprovada pelo comitê das madrinhas';
+        identity.classList.add('is-visible');
+        identity.setAttribute('aria-hidden', 'false');
+        formPortraitMosaic();
+        window.setTimeout(() => { burstConfetti(); playFinale(); }, 850);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.setTimeout(() => { identity.setAttribute('tabindex', '-1'); identity.focus({ preventScroll: true }); }, 300);
+      }
+
+      nextQuestionButton.addEventListener('click', advanceQuestion);
+      soundToggle.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        if (soundEnabled) ensureAudio();
+        soundToggle.textContent = soundEnabled ? '♪' : '×';
+        soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+        soundToggle.setAttribute('aria-label', soundEnabled ? 'Desativar sons' : 'Ativar sons');
+        soundToggle.title = soundEnabled ? 'Som ligado' : 'Som desligado';
+      });
+
+      revealButton.addEventListener('click', () => {
+        ensureAudio();
+        document.body.classList.add('revealed');
+        intro.classList.add('is-open');
+        invitation.setAttribute('aria-hidden', 'false');
+        renderQuestion();
+        window.setTimeout(() => { invitation.setAttribute('tabindex', '-1'); invitation.focus({ preventScroll: true }); }, 600);
+      });
+
+      openInviteButton.addEventListener('click', () => {
+        identity.classList.remove('is-visible');
+        identity.setAttribute('aria-hidden', 'true');
+        invitationContent.classList.add('is-visible');
+        invitationContent.setAttribute('aria-hidden', 'false');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    </script>
+  </body>
+</html>
